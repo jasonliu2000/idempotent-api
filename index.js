@@ -28,25 +28,25 @@ const generateId = () => {
 
 app.use(express.json())
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
+app.get('/', (req, res) => {
+  res.send('<h1>Hello World!</h1>')
 })
 
-app.get('/api/orders', (request, response) => {
-  response.json(orders)
+app.get('/api/orders', (req, res) => {
+  res.json(orders)
 })
 
-app.get('/api/orders/:id', (request, response) => {
-  const id = request.params.id
+app.get('/api/orders/:id', (req, res) => {
+  const id = req.params.id
   const order = orders.find(order => order.id == id)
-  response.json(order)
+  res.json(order)
 })
 
-app.post('/api/orders', (request, response) => {
-  const body = request.body
+app.post('/api/orders', (req, res) => {
+  const body = req.body
 
   if (!body.product) {
-    return response.status(400).json({ 
+    return res.status(400).json({ 
       error: 'content missing' 
     })
   }
@@ -58,8 +58,19 @@ app.post('/api/orders', (request, response) => {
   }
 
   orders = orders.concat(order)
+  res.json(order)
+})
 
-  response.json(order)
+app.patch('/api/orders/:id', (req, res) => {
+  const id = req.params.id
+  const order = orders.find(order => order.id == id)
+  const updateData = req.body
+
+  Object.keys(updateData).forEach(patchedField => {
+    order[patchedField] = updateData[patchedField]
+  })
+
+  res.json(order)
 })
 
 const PORT = 3001
